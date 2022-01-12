@@ -11,10 +11,6 @@ STARTING_TILES = 2
 VALID_DIRECTIONS = ["w", "a", "s", "d"]
 WINNING_TILE = 2048 
 EMPTY_TILE = 0 
-EMPTY_BOARD = [[0, 0, 0, 0],
-               [0, 0, 0, 0],
-               [0, 0, 0, 0],
-               [0, 0, 0, 0]]
 
 
 def get_valid_direction() -> str: 
@@ -25,7 +21,15 @@ def get_valid_direction() -> str:
         if direction in VALID_DIRECTIONS: 
             return direction 
         else: 
-            print("Valid directions are w, a, s, and d. Please try again.")
+            print("\nValid directions are w, a, s, and d. Please try again.\n")
+
+
+def generate_empty_board(game_tiles: list) -> list: 
+
+    for i in range(BOARD_SIDE_LENGTH):
+        game_tiles.append([0] * 4)
+
+    return game_tiles 
 
 
 def print_board(matrix: str):
@@ -48,8 +52,6 @@ def print_board(matrix: str):
 
     print("\\" + "-" * GAME_BOARD_WIDTH + "/")
 
-
-# Game Logic 
 
 
 def game_end(game_matrice: list) -> str:
@@ -77,7 +79,9 @@ def tile_shift(game_tiles: list, direction: str) -> list:
     """Shift the tiles in the grid game_tiles in the upwards or leftwards direction. 
     Return the new game tiles as a two dimensional list. """
 
-    shifted_tiles = EMPTY_BOARD
+    shifted_tiles = []
+    
+    shifted_tiles = generate_empty_board(shifted_tiles)
 
     if direction == "up": 
         for col in range(BOARD_SIDE_LENGTH): 
@@ -87,6 +91,7 @@ def tile_shift(game_tiles: list, direction: str) -> list:
                 if game_tiles[row][col] != 0: 
                     shifted_tiles[empty_position][col] = game_tiles[row][col]
                     empty_position += 1
+
     else: 
         for col in range(BOARD_SIDE_LENGTH): 
             empty_position = 0 
@@ -104,7 +109,9 @@ def reflect_grid(game_tiles: list, direction: str) -> list:
     """Shift the tiles in the grid game_tiles in the leftwards direction. 
     Return the new game tiles as a two dimensional list. """
 
-    reflected_tiles = EMPTY_BOARD
+    reflected_tiles = [] 
+
+    reflected_tiles = generate_empty_board(reflected_tiles)
 
     if direction == "vertical": 
         for row in range(BOARD_SIDE_LENGTH): 
@@ -126,23 +133,38 @@ def merge_grid(game_tiles: list, direction: str) -> list:
     next to each other in the direction of the merge and are the same number. 
     Return the merged game tiles as a two dimensional list. """
 
-    merged_tiles = EMPTY_BOARD
+    merge = False
 
-    for row in range(BOARD_SIDE_LENGTH): 
-        for col in range(BOARD_SIDE_LENGTH - 1): 
-                
-            if direction == "up": 
-                # Check if two tiles of the same number are on top of each other. 
-                if game_tiles[col][row] == game_tiles[col + 1][row]: 
-                    merged_tiles[col][row] *= 2 
-                    merged_tiles[col + 1][row] = 0 
+    merged_tiles = game_tiles 
 
-            else: 
-                if game_tiles[row][col] == game_tiles[row][col + 1]:
-                    merged_tiles[row][col] *= 2
+    if direction == "up": 
+        for col in range(BOARD_SIDE_LENGTH):
+            for row in range(BOARD_SIDE_LENGTH - 1):
+                first_tile = game_tiles[row][col]
+                second_tile = game_tiles[row + 1][col]
+
+                if first_tile == second_tile and first_tile + second_tile != 0:
+                    merged_tiles[row][col] = first_tile + second_tile 
+                    merged_tiles[row + 1][col] = 0
+
+                    merge = True
+
+    else: 
+        for row in range(BOARD_SIDE_LENGTH): 
+            for col in range(BOARD_SIDE_LENGTH - 1): 
+
+                first_tile = game_tiles[row][col]
+                second_tile = game_tiles[row][col + 1]
+                if first_tile == second_tile and first_tile + second_tile != 0:
+                    merged_tiles[row][col] = first_tile + second_tile
                     merged_tiles[row][col + 1] = 0
 
-    return merged_tiles 
+                    merge = True
+
+    if merge:
+        return merged_tiles 
+    
+    return game_tiles 
 
 
 def add_random_tile(game_tiles: list) -> list: 
@@ -199,56 +221,36 @@ def game_status(game_tiles: list) -> str:
 
 def move_up(game_tiles: list) -> str: 
     game_tiles = tile_shift(game_tiles, "up") 
-    print("After Shift")
-    print_board(game_tiles)
     game_tiles = merge_grid(game_tiles, "up") 
-    print("After Merge")
-    print_board(game_tiles)
     game_tiles = tile_shift(game_tiles, "up")
-    print("After Merge")
-    print_board(game_tiles)
 
     return game_tiles 
 
 
 def move_left(game_tiles: list) -> str: 
     game_tiles = tile_shift(game_tiles, "left") 
-    # print_board(game_tiles)
     game_tiles = merge_grid(game_tiles, "left")
-    # print_board(game_tiles)
     game_tiles = tile_shift(game_tiles, "left") 
-    # print_board(game_tiles)
 
     return game_tiles 
 
 
 def grid_move(game_tiles: list, direction: str) -> list:
-
-    print(direction)
-
     if direction == "w": 
         return move_up(game_tiles)
 
     elif direction == "s":
         game_tiles = reflect_grid(game_tiles, "vertical") 
-        print("Reflection")
-        print_board(game_tiles)
         game_tiles = move_up(game_tiles)
-        print("Moved Up")
-        print_board(game_tiles)
-        print("Reflection 2")
         game_tiles = reflect_grid(game_tiles, "vertical") 
-        print_board(game_tiles)
 
     elif direction == "a": 
         return move_left(game_tiles)
 
     else: 
         game_tiles = reflect_grid(game_tiles, "horizontal")
-        print_board(game_tiles)
         game_tiles = move_left(game_tiles)
         game_tiles = reflect_grid(game_tiles, "horizontal")
-        print_board(game_tiles)
 
     return game_tiles 
 
@@ -256,29 +258,22 @@ def grid_move(game_tiles: list, direction: str) -> list:
 def game_round():
     """Plays one single round of 2048."""
 
-    game_tiles = EMPTY_BOARD
+    game_tiles = []
+    game_tiles = generate_empty_board(game_tiles)
     
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
 
     print_board(game_tiles)
+    print()
 
     while game_status(game_tiles) != "loss": 
         direction = get_valid_direction() 
+        print() 
 
         game_tiles = grid_move(game_tiles, direction) 
+        game_tiles = add_random_tile(game_tiles)
         print_board(game_tiles)
-
-
-def game_round2(game_tiles):
-    """Plays one single round of 2048."""
-
-    while game_status(game_tiles) != "loss":
-        direction = get_valid_direction()
-
-        game_tiles = grid_move(game_tiles, direction)
-        print_board(game_tiles)
-
 
 
 def main():
@@ -295,27 +290,7 @@ def main():
     print("4. Random 2, 4, and 8 tiles will be added to the board on 0 tiles.")
     print("5. You lose when there are no more 0 tiles and no more possible moves.\n")
 
-    game_tiles = [[0, 4, 0, 0], 
-                  [2, 0, 0, 0], 
-                  [0, 0, 0, 0], 
-                  [0, 0, 0, 0]]
-
-    print_board(game_tiles)
-    game_round2(game_tiles)
- 
-    """ for i in range(1): 
-        game_tiles = EMPTY_BOARD 
-
-        game_tiles = add_random_tile(game_tiles) 
-
-        print_board(game_tiles)
-
-        game_tiles = move_left(game_tiles)
-
-        print_board(game_tiles) """
-
-    # game_round()
-
+    game_round()
 
 
 if __name__ == "__main__":
