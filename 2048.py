@@ -558,7 +558,7 @@ def main():
     print("5. You lose when there are no more empty tiles and no more"
           + " possible moves.\n")
 
-    for i in range(20): 
+    for i in range(GAME_BOARD_WIDTH): 
         print(".  ", end="")
 
     print("\n")
@@ -569,7 +569,7 @@ def main():
     key_bind_mode = MOVES_1
 
     while program != QUIT:
-        program = get_user_choice("start")
+        program = get_user_choice(False)
 
         if program == PLAY:
             print()
