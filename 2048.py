@@ -11,12 +11,14 @@ __author__ = "Allan Zhou"
 
 
 from random import randint
+from time import sleep
 
 
 # Graphics Constants
-GAME_BOARD_WIDTH = 23
+TIME_DELAY = 3
 TILE_LENGTH = 5
 BOARD_SIDE_LENGTH = 4
+GAME_BOARD_WIDTH = 23
 
 # Program Choice Constants
 PLAY = "1"
@@ -59,11 +61,9 @@ def choose_key_bind(key_bind: str) -> dict:
         if key_bind in VALID_GAME_CHOICES:
             if key_bind == "1":
                 key_bind_mode = MOVES_1
-                print("Using key binding {}.\n".format(key_bind_mode))
 
             elif key_bind == "2":
                 key_bind_mode = MOVES_2
-                print("Using key binding 2 {}.\n".format(key_bind_mode))
 
             elif key_bind == "3":
                 # Set up a new dictionary for key binding. 
@@ -76,10 +76,11 @@ def choose_key_bind(key_bind: str) -> dict:
                 for key in key_bind_mode:
                     new_value = input("Your key for the move {}: "
                                     .format(key)).strip()
-
                     key_bind_mode[key] = new_value
 
-                print("\nUsing custom key binding {}.\n".format(key_bind_mode))
+                print()
+
+            print("🤏 Using key binding {}. 🤏\n".format(key_bind_mode))
                 
             return key_bind_mode
 
@@ -102,7 +103,7 @@ def print_board(game_tiles: str):
         print("|", end="")
 
         # Print tiles, separated by columns.
-        for column in range(4):
+        for column in range(BOARD_SIDE_LENGTH):
             print("{:>{width}}|".format(game_tiles[row][column],
                                         width=TILE_LENGTH), end="")
         print()
@@ -333,8 +334,10 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
 def add_random_tile(game_tiles: list) -> list:
     """Add a 2 or 4 tile to the grid, game_tiles, at a random empty tile."""
 
+    # Random 2 or 4 tile.
     random_tile = TILE_BASE ** randint(1, 2)
 
+    # Place new tile in random, empty tile spot. 
     while True:
         row = randint(0, 3)
         col = randint(0, 3)
@@ -469,27 +472,31 @@ def game_board_move(game_tiles: list, direction: str,
 
     if direction == key_bind_mode["up"]:
         moved_tiles, score = move_up(game_tiles)
+        move_direction = "up"
 
     # A move downwards is a reflected move upwards.
     elif direction == key_bind_mode["down"]:
         moved_tiles = reflect_game_board(game_tiles, True)
         moved_tiles, score = move_up(moved_tiles)
         moved_tiles = reflect_game_board(moved_tiles, True)
+        move_direction = "down"
 
     elif direction == key_bind_mode["left"]:
         moved_tiles, score = move_left(game_tiles)
+        move_direction = "left"
 
     # A move rightwards is a reflected move leftwards.
     else:
         moved_tiles = reflect_game_board(game_tiles, False)
         moved_tiles, score = move_left(moved_tiles)
         moved_tiles = reflect_game_board(moved_tiles, False)
+        move_direction = "right"
 
     # The game board did not change and no more random tiles can be added.
     # However, there are still possible moves.
     if moved_tiles == game_tiles and not check_tile(moved_tiles, EMPTY_TILE):
         print("The move {}wards does not move any tiles.\n"
-              .format(direction))
+              .format(move_direction))
 
     return moved_tiles, score
 
@@ -506,14 +513,19 @@ def game_round(key_bind_mode: dict) -> int:
     game_tiles = []
     game_tiles = generate_empty_board(game_tiles)
 
+    # Start with 2 tiles. 
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
+
+    for key in key_bind_mode: 
+        print("{} ➡️ {}".format(key, key_bind_mode[key]))
+    print()
 
     print_board(game_tiles)
 
     while game_outcome(game_tiles) != "loss":
         if check_tile(game_tiles, WINNING_TILE) and not won:
-            print("Hooray! You won!")
+            print("😱 Hooray! You won! 😱")
             won = True
             program = get_user_choice(True)
 
@@ -535,7 +547,7 @@ def game_round(key_bind_mode: dict) -> int:
 
         print_board(game_tiles)
 
-    print("\nSorry, you lost the game. Better luck next time.\n")
+    print("\n😢 Sorry, you lost the game. Better luck next time. 😢\n")
     print("🎉  Total Score: {} 🎉 \n".format(round_score))
 
     return round_score
@@ -572,7 +584,8 @@ def main():
         program = get_user_choice(False)
 
         if program == PLAY:
-            print()
+            print("\nGame starting...\n")
+            sleep(TIME_DELAY)
             round_score = game_round(key_bind_mode)
 
             if round_score > high_score: 
