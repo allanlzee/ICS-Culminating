@@ -3,8 +3,7 @@ and game logic functions for a terminal-based setting with keyboard
 characters.
 
 The program also has a game settings option, which can be used to change or
-create keybinds for the game, based on user preference (yes, I'm talking about 
-you, Mr. Cho).
+create keybinds for the game, based on user preference.
 """
 
 
@@ -31,7 +30,7 @@ TILE_BASE = 2
 WINNING_TILE = 2048
 EMPTY_TILE = 0
 
-# Game Logic Constants
+# Keyboard Binding Constants 
 MOVES_1 = {"up": "w",
            "left": "a",
            "down": "s",
@@ -88,9 +87,9 @@ def choose_key_bind(key_bind: str) -> dict:
             print("Invalid keybind choice. Please try again.\n")
 
 
-def print_board(matrix: str):
+def print_board(game_tiles: str):
     """Print the game board, using the tile numbers in the two dimensional
-    list matrix."""
+    list, game_tiles."""
 
     for row in range(BOARD_SIDE_LENGTH):
         # Top horizontal line with corners.
@@ -104,22 +103,22 @@ def print_board(matrix: str):
 
         # Print tiles, separated by columns.
         for column in range(4):
-            print("{:>{width}}|".format(matrix[row][column],
+            print("{:>{width}}|".format(game_tiles[row][column],
                                         width=TILE_LENGTH), end="")
-
         print()
 
     # Bottom horizontal line with corners.
     print("\\" + "-" * GAME_BOARD_WIDTH + "/")
 
 
-def get_user_choice(status: str) -> str:
+def get_user_choice(won: bool) -> str:
     """Prompt the user to enter a game choice, 1, 2, or 3, which corresponds 
     to play, quit, and edit game settings, respectively. Return the valid 
-    choice as a string."""
+    choice as a string. If won is True, give option to continue the game 
+    instead of playing the game. """
 
     while True:
-        if status == "win":
+        if won:
             print("1. Continue Game.\n2. Exit Game.\n3. Game Settings.\n")
         else:
             print("Main Menu\n" + "-" * len("Main Menu"))
@@ -128,7 +127,7 @@ def get_user_choice(status: str) -> str:
         program = input("Your choice: ")
 
         # Ensure that user enters a valid game choice.
-        if program == PLAY or program == QUIT or program == SETTINGS:
+        if program in VALID_GAME_CHOICES:
             return program
         else:
             print("{} is not a valid choice. Valid choices are".format(program)
@@ -215,13 +214,13 @@ def tile_shift(game_tiles: list, upwards: bool) -> list:
 
     # Tile shift leftwards.
     else:
-        for col in range(BOARD_SIDE_LENGTH):
+        for row in range(BOARD_SIDE_LENGTH):
             empty_position = 0
 
-            for row in range(BOARD_SIDE_LENGTH):
+            for col in range(BOARD_SIDE_LENGTH):
                 # Shift non-zero tiles as far left as possible (no merge).
-                if game_tiles[col][row] != 0:
-                    shifted_tiles[col][empty_position] = game_tiles[col][row]
+                if game_tiles[row][col] != 0:
+                    shifted_tiles[row][empty_position] = game_tiles[row][col]
                     empty_position += 1
 
     return shifted_tiles
@@ -395,10 +394,11 @@ def game_outcome(game_tiles: list) -> str:
         return "loss"
 
 
-def move_up(game_tiles: list) -> list:
+def move_up(game_tiles: list) -> tuple:
     """Perform one move of the game board, game_tiles, upwards. One move 
     upwards consists of two upwards tile shifts, with one upwards tile 
-    merge in between. Return the game board after the up move.
+    merge in between. Return the game board after the up move and the score
+    accumulated from the move.
 
     >>> move_up([[0, 2, 2, 8], 
                  [4, 0, 0, 8], 
@@ -417,10 +417,11 @@ def move_up(game_tiles: list) -> list:
     return game_tiles, score
 
 
-def move_left(game_tiles: list) -> list:
+def move_left(game_tiles: list) -> tuple:
     """Perform one move of the game board, game_tiles, leftwards. One move 
     leftwards consists of two tile shifts left, with on leftwards tile merge
-    in between. Return the game board after the left move. 
+    in between. Return the game board after the left move and the score
+    accumulated from the move.
 
     >>> move_left([[0, 2, 2, 8], 
                    [4, 0, 0, 8], 
@@ -442,7 +443,8 @@ def move_left(game_tiles: list) -> list:
 def game_board_move(game_tiles: list, direction: str, 
                     key_bind_mode: dict) -> tuple:
     """Perform one move of the game board, in any direction (up, down, left, 
-    or right). Return the game board after the move.
+    or right). Return the game board after the move and the points earned from
+    the move. 
 
     >>> game_board_move([[0, 0, 0, 2], 
                          [0, 2, 0, 0], 
@@ -493,7 +495,7 @@ def game_board_move(game_tiles: list, direction: str,
 
 
 def game_round(key_bind_mode: dict) -> int:
-    """Plays one single round of 2048."""
+    """Plays one single round of 2048. Return the score of the round."""
 
     # Every time two tiles are merged, the value of their sum is added to the
     # score.
@@ -513,7 +515,7 @@ def game_round(key_bind_mode: dict) -> int:
         if check_tile(game_tiles, WINNING_TILE) and not won:
             print("Hooray! You won!")
             won = True
-            program = get_user_choice("win")
+            program = get_user_choice(True)
 
             if program == QUIT:
                 print("Exiting Game...\n")
@@ -555,6 +557,11 @@ def main():
           + " spots. If a tile cannot be added to the grid, you have lost.")
     print("5. You lose when there are no more empty tiles and no more"
           + " possible moves.\n")
+
+    for i in range(20): 
+        print(".  ", end="")
+
+    print("\n")
 
     high_score = 0
 
