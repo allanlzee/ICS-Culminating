@@ -131,7 +131,8 @@ def get_user_choice(won: bool) -> str:
         if program in VALID_GAME_CHOICES:
             return program
         else:
-            print("{} is not a valid choice. Valid choices are".format(program)
+            print("{} is not a valid choice. Valid choices are"
+                  .format(program)
                   + " ({}) for play, ({}) for quit, and ({}) for settings.\n"
                   .format(PLAY, QUIT, SETTINGS))
 
@@ -154,9 +155,10 @@ def get_valid_direction(key_bind_mode: dict) -> str:
         if valid_direction:
             return direction
         else:
-            print("\nValid directions are {}, {}, {}, and {}. Please try again."
+            print("\nValid directions are {}, {}, {}, and {}. " 
                 .format(key_bind_mode["up"], key_bind_mode["left"], 
-                        key_bind_mode["down"], key_bind_mode["right"]))
+                        key_bind_mode["down"], key_bind_mode["right"])
+                + "Please try again.")
 
 
 def generate_empty_board(game_tiles: list) -> list:
@@ -367,36 +369,6 @@ def check_tile(game_tiles: list, value: int) -> bool:
     return False
 
 
-def game_outcome(game_tiles: list) -> str:
-    """Return "win" if the user has won the round by creating the tile 
-    2048 in game_tiles. Return "in progress" if any possible moves can be 
-    made in game_tiles. Otherwise, return "loss"."""
-
-    if check_tile(game_tiles, WINNING_TILE):
-        return "win"
-
-    # If there are empty tiles, there is a possible move.
-    elif check_tile(game_tiles, EMPTY_TILE):
-        return "in progress"
-
-    # Check for mergeable tiles.
-    else:
-        # Is horizontal tile merging possible?
-        for row in range(BOARD_SIDE_LENGTH):
-            for col in range(BOARD_SIDE_LENGTH - 1):
-                if game_tiles[row][col] == game_tiles[row][col + 1]:
-                    return "in progress"
-
-        # Is vertical tile merging possible?
-        for col in range(BOARD_SIDE_LENGTH):
-            for row in range(BOARD_SIDE_LENGTH - 1):
-                if game_tiles[row][col] == game_tiles[row + 1][col]:
-                    return "in progress"
-
-        # No possible moves on the game board.
-        return "loss"
-
-
 def move_up(game_tiles: list) -> tuple:
     """Perform one move of the game board, game_tiles, upwards. One move 
     upwards consists of two upwards tile shifts, with one upwards tile 
@@ -501,6 +473,37 @@ def game_board_move(game_tiles: list, direction: str,
     return moved_tiles, score
 
 
+def game_outcome(game_tiles: list, won: bool) -> str:
+    """Return "win" if the user has won the round by creating the tile 
+    2048 in game_tiles. Return "in progress" if any possible moves can be 
+    made in game_tiles. Otherwise, return "loss"."""
+
+    # If the user has not already created the 2048 tile, they have won.
+    if check_tile(game_tiles, WINNING_TILE) and not won:
+        return "win"
+
+    # If there are empty tiles, there is a possible move.
+    elif check_tile(game_tiles, EMPTY_TILE):
+        return "in progress"
+
+    # Check for mergeable tiles.
+    else:
+        # Is horizontal tile merging possible?
+        for row in range(BOARD_SIDE_LENGTH):
+            for col in range(BOARD_SIDE_LENGTH - 1):
+                if game_tiles[row][col] == game_tiles[row][col + 1]:
+                    return "in progress"
+
+        # Is vertical tile merging possible?
+        for col in range(BOARD_SIDE_LENGTH):
+            for row in range(BOARD_SIDE_LENGTH - 1):
+                if game_tiles[row][col] == game_tiles[row + 1][col]:
+                    return "in progress"
+
+        # No possible moves on the game board.
+        return "loss"
+
+
 def game_round(key_bind_mode: dict) -> int:
     """Plays one single round of 2048. Return the score of the round."""
 
@@ -512,6 +515,7 @@ def game_round(key_bind_mode: dict) -> int:
 
     game_tiles = []
     game_tiles = generate_empty_board(game_tiles)
+    game_tiles[0][0] = 2048
 
     # Start with 2 tiles. 
     for i in range(STARTING_TILES):
@@ -524,9 +528,9 @@ def game_round(key_bind_mode: dict) -> int:
 
     print_board(game_tiles)
 
-    while game_outcome(game_tiles) != "loss":
+    while game_outcome(game_tiles, won) != "loss":
         if check_tile(game_tiles, WINNING_TILE) and not won:
-            print("😱 Hooray! You won! 😱")
+            print("\n😱 Hooray! You won! 😱")
             won = True
             program = get_user_choice(True)
 
@@ -543,15 +547,20 @@ def game_round(key_bind_mode: dict) -> int:
                                     direction, key_bind_mode)
         round_score += move_score
 
-        # If the board does not have an empty square or the move performed did not
-        # change the game board, do not add a random tile. 
-        if check_tile(new_game_tiles, EMPTY_TILE) and new_game_tiles != game_tiles:
+        # If the board does not have an empty square or the move performed did 
+        # not change the game board, do not add a random tile. 
+        if check_tile(new_game_tiles, EMPTY_TILE) and \
+            new_game_tiles != game_tiles:
+
             new_game_tiles = add_random_tile(new_game_tiles)
             game_tiles = new_game_tiles 
 
         print_board(new_game_tiles)
 
-    print("\n😢 Sorry, you lost the game. Better luck next time. 😢\n")
+    print() 
+    if not won: 
+        print("😢 Sorry, you lost the game. Better luck next time. 😢\n")
+
     print("🎉  Total Score: {} 🎉 \n".format(round_score))
 
     return round_score
