@@ -494,7 +494,7 @@ def game_board_move(game_tiles: list, direction: str,
 
     # The game board did not change and no more random tiles can be added.
     # However, there are still possible moves.
-    if moved_tiles == game_tiles and not check_tile(moved_tiles, EMPTY_TILE):
+    if moved_tiles == game_tiles:
         print("The move {}wards does not move any tiles.\n"
               .format(move_direction))
 
@@ -518,7 +518,8 @@ def game_round(key_bind_mode: dict) -> int:
         game_tiles = add_random_tile(game_tiles)
 
     for key in key_bind_mode: 
-        print("{} ➡️ {}".format(key, key_bind_mode[key]))
+        print("{} : {}".format(key, key_bind_mode[key]))
+
     print()
 
     print_board(game_tiles)
@@ -538,14 +539,17 @@ def game_round(key_bind_mode: dict) -> int:
         direction = get_valid_direction(key_bind_mode)
         print()
 
-        game_tiles, move_score = game_board_move(game_tiles, 
+        new_game_tiles, move_score = game_board_move(game_tiles, 
                                     direction, key_bind_mode)
         round_score += move_score
 
-        if check_tile(game_tiles, EMPTY_TILE):
-            game_tiles = add_random_tile(game_tiles)
+        # If the board does not have an empty square or the move performed did not
+        # change the game board, do not add a random tile. 
+        if check_tile(new_game_tiles, EMPTY_TILE) and new_game_tiles != game_tiles:
+            new_game_tiles = add_random_tile(new_game_tiles)
+            game_tiles = new_game_tiles 
 
-        print_board(game_tiles)
+        print_board(new_game_tiles)
 
     print("\n😢 Sorry, you lost the game. Better luck next time. 😢\n")
     print("🎉  Total Score: {} 🎉 \n".format(round_score))
@@ -558,7 +562,7 @@ def main():
 
     print("Welcome to 2048.\n")
 
-    print("Overview of the Game: ")
+    print("Overview of the Game: \n")
     print("1. The objective of the game is to create the tile 2048 by merging"
           + " tiles together.")
     print("2. You can shift the tiles on the game board in 4 directions:"
