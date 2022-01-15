@@ -13,6 +13,8 @@ __author__ = "Allan Zhou"
 from random import randint
 from time import sleep
 
+from numpy import False_
+
 
 # Graphics Constants
 TIME_DELAY = 3
@@ -180,13 +182,13 @@ def generate_empty_board(game_tiles: list) -> list:
 
 def tile_shift(game_tiles: list, upwards: bool) -> list:
     """Shift the tiles in the grid game_tiles in the upwards or leftwards 
-    direction. Return the new game tiles as a two dimensional list. 
+    direction, based on the value of upwards. Return the new game tiles as 
+    a two dimensional list. 
 
     >>> tile_shift([[0, 0, 0, 0],
                     [0, 0, 0, 0], 
                     [0, 0, 0, 0], 
-                    [0, 0, 0, 2]], 
-                    "up") 
+                    [0, 0, 0, 2]], True) 
     [[0, 0, 0, 2], 
      [0, 0, 0, 0], 
      [0, 0, 0, 0], 
@@ -195,7 +197,7 @@ def tile_shift(game_tiles: list, upwards: bool) -> list:
     >>> tile_shift([[0, 0, 0, 0],
                     [0, 0, 0, 0], 
                     [0, 0, 0, 0], 
-                    [0, 0, 0, 2]], "left") 
+                    [0, 0, 0, 2]], False) 
     [[0, 0, 0, 0], 
      [0, 0, 0, 0], 
      [0, 0, 0, 0], 
@@ -379,6 +381,7 @@ def move_up(game_tiles: list) -> tuple:
                  [4, 0, 0, 8], 
                  [0, 2, 0, 0], 
                  [2, 0, 0, 2]])
+
     [[4, 4, 2, 16], 
      [2, 0, 0, 2], 
      [0, 0, 0, 0], 
@@ -402,10 +405,10 @@ def move_left(game_tiles: list) -> tuple:
                    [4, 0, 0, 8], 
                    [0, 2, 0, 0], 
                    [2, 0, 0, 2]])
-    [[4, 8, 0, 0], 
-     [4, 8, 0, 0], 
-     [2, 0, 0, 0], 
-     [4, 0, 0, 0]]
+    ([[4, 4, 2, 16], 
+      [2, 0, 0, 2], 
+      [0, 0, 0, 0], 
+      [0, 0, 0, 0]], 20)
     """
 
     game_tiles = tile_shift(game_tiles, False)
@@ -475,8 +478,28 @@ def game_board_move(game_tiles: list, direction: str,
 
 def game_outcome(game_tiles: list, won: bool) -> str:
     """Return "win" if the user has won the round by creating the tile 
-    2048 in game_tiles. Return "in progress" if any possible moves can be 
-    made in game_tiles. Otherwise, return "loss"."""
+    2048 in game_tiles and the user has not won in a previous move. Return 
+    "in progress" if any possible moves can be made in game_tiles. Otherwise, 
+    return "loss".
+    
+    >>> game_outcome([[0, 2, 2, 8], 
+                      [4, 0, 0, 8], 
+                      [0, 2, 0, 0], 
+                      [2, 0, 0, 2]], False)
+    "in progress" 
+
+    >>> game_outcome([[2, 4, 2, 8], 
+                      [4, 16, 32, 512], 
+                      [32, 2, 128, 64], 
+                      [2, 4, 1024, 2]], False)
+    "loss"
+
+    >>> game_outcome([2048, 4, 0, 8], 
+                      [4, 0, 32, 512], 
+                      [0, 2, 32, 0], 
+                      [2, 0, 1024, 2]], True)
+    "in progress"
+    """
 
     # If the user has not already created the 2048 tile, they have won.
     if check_tile(game_tiles, WINNING_TILE) and not won:
@@ -515,7 +538,6 @@ def game_round(key_bind_mode: dict) -> int:
 
     game_tiles = []
     game_tiles = generate_empty_board(game_tiles)
-    game_tiles[0][0] = 2048
 
     # Start with 2 tiles. 
     for i in range(STARTING_TILES):
