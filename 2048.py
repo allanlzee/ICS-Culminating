@@ -591,7 +591,14 @@ def game_round(key_bind_mode: dict) -> int:
 def main():
     """The main game loop, with rules and a game overview."""
 
-    print("Welcome to 2048.\n")
+    print("Welcome to...\n")
+
+    print("######  ######  ##  ##  ######")
+    print("    ##  ##  ##  ##  ##  ##  ##")
+    print("######  ##  ##  ######  ######")
+    print("##      ##  ##      ##  ##  ##")
+    print("######  ######      ##  ######\n")
+    
 
     print("Overview of the Game: \n")
     print("1. The objective of the game is to create the tile 2048 by merging"
