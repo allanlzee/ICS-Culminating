@@ -13,8 +13,6 @@ __author__ = "Allan Zhou"
 from random import randint
 from time import sleep
 
-from numpy import False_
-
 
 # Graphics Constants
 TIME_DELAY = 3
