@@ -16,9 +16,9 @@ from time import sleep
 
 # Graphics Constants
 TIME_DELAY = 3
-TILE_LENGTH = 5
+TILE_LENGTH = 6
 BOARD_SIDE_LENGTH = 4
-GAME_BOARD_WIDTH = 23
+GAME_BOARD_WIDTH = TILE_LENGTH * BOARD_SIDE_LENGTH + 3
 
 # Program Choice Constants
 PLAY = "1"
@@ -95,21 +95,27 @@ def print_board(game_tiles: str):
     for row in range(BOARD_SIDE_LENGTH):
         # Top horizontal line with corners.
         if row == 0:
-            print("/" + "-" * GAME_BOARD_WIDTH + "\\")
+            print("╔" + "═" * GAME_BOARD_WIDTH + "╗")
         # Middle horizontal lines with edges.
         else:
-            print("|" + "-" * GAME_BOARD_WIDTH + "|")
+            print("║" + "─" * GAME_BOARD_WIDTH + "║")
 
-        print("|", end="")
+        print("║", end="")
 
         # Print tiles, separated by columns.
         for column in range(BOARD_SIDE_LENGTH):
-            print("{:>{width}}|".format(game_tiles[row][column],
-                                        width=TILE_LENGTH), end="")
+            tile = game_tiles[row][column]
+            if tile != 0:
+                print("{:>{width}}║".format(game_tiles[row][column],
+                    width=TILE_LENGTH), end="")
+            else: 
+                print(" " * TILE_LENGTH + "║", end="")
+
+
         print()
 
     # Bottom horizontal line with corners.
-    print("\\" + "-" * GAME_BOARD_WIDTH + "/")
+    print("╚" + "═" * GAME_BOARD_WIDTH + "╝")
 
 
 def get_user_choice(won: bool) -> str:
@@ -534,8 +540,7 @@ def game_round(key_bind_mode: dict) -> int:
 
     won = False
 
-    game_tiles = []
-    game_tiles = generate_empty_board(game_tiles)
+    game_tiles = generate_empty_board([])
 
     # Start with 2 tiles. 
     for i in range(STARTING_TILES):
