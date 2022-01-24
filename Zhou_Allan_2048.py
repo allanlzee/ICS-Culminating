@@ -31,6 +31,7 @@ STARTING_TILES = 2
 TILE_BASE = 2
 WINNING_TILE = 2048
 EMPTY_TILE = 0
+MAX_TILE = 2 ** 20
 
 # Keyboard Binding Constants 
 MOVES_1 = {"up": "w",
@@ -564,6 +565,9 @@ def game_round(key_bind_mode: dict) -> int:
 
     game_tiles = generate_empty_board([])
 
+    game_tiles[0][0] = 524288
+    game_tiles[3][0] = 524288
+
     # Start with 2 tiles. 
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
@@ -576,7 +580,12 @@ def game_round(key_bind_mode: dict) -> int:
     print_board(game_tiles)
 
     while game_outcome(game_tiles, won) != "loss":
-        if check_tile(game_tiles, WINNING_TILE) and not won:
+        # The tiles hold up to 6 digits.
+        if check_tile(game_tiles, MAX_TILE): 
+            print("The game has ended.")
+            return round_score
+            
+        elif check_tile(game_tiles, WINNING_TILE) and not won:
             print("\n😱 Hooray! You won! 😱")
             won = True
             program = get_user_choice(True)
