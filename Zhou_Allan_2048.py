@@ -605,8 +605,8 @@ def main():
           + " up, down, right, and left.")
     print("3. When two tiles of the same number are next to each other during"
           + " a merge, they will add together and merge into the same tile.")
-    print("4. 2 and 4 tiles will be added to the board in random, empty tile"
-          + " spots. If a tile cannot be added to the grid, you have lost.")
+    print("4. 2 and 4 tiles will be added to the board in random, empty tile" 
+          + " spots.")
     print("5. You lose when there are no more empty tiles and no more"
           + " possible moves.\n")
 
