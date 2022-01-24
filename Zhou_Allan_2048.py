@@ -123,6 +123,7 @@ def print_board(game_tiles: str):
         # Print tiles in columns, separated by vertical lines. 
         for column in range(BOARD_SIDE_LENGTH):
             tile = game_tiles[row][column]
+            # Tiles with the value of 0 will be printed with empty spaces.
             if tile != 0:
                 print("{:>{width}}║".format(game_tiles[row][column],
                     width=TILE_LENGTH), end="")
@@ -151,7 +152,7 @@ def get_user_choice(won: bool) -> str:
         if won:
             print("1. Continue Game.\n2. Exit Game.\n3. Game Settings.\n")
         else:
-            print("Main Menu\n" + "-" * len("Main Menu"))
+            print("Main Menu\n" + "═" * len("Main Menu"))
             print("1. Play Game. \n2. Quit.\n3. Game Settings.\n")
 
         program = input("Your choice: ")
@@ -190,16 +191,18 @@ def get_valid_direction(key_bind_mode: dict) -> str:
                 + "Please try again.")
 
 
-def generate_empty_board(game_tiles: list) -> list:
+def generate_empty_board() -> list:
     """Generates a empty game board, which is a 4 by 4 two dimensional list
     with only 0s. 
 
-    >>> generate_empty_board([]) 
+    >>> generate_empty_board() 
     [[0, 0, 0, 0],
      [0, 0, 0, 0],
      [0, 0, 0, 0],
      [0, 0, 0, 0]] 
     """
+
+    game_tiles = []
 
     for i in range(BOARD_SIDE_LENGTH):
         game_tiles.append([0] * BOARD_SIDE_LENGTH)
@@ -231,7 +234,7 @@ def tile_shift(game_tiles: list, upwards: bool) -> list:
      [2, 0, 0, 0]]
     """
 
-    shifted_tiles = generate_empty_board([])
+    shifted_tiles = generate_empty_board()
 
     # Tile shift upwards.
     if upwards:
@@ -281,7 +284,7 @@ def reflect_game_board(game_tiles: list, vertical: bool) -> list:
      [0, 0, 2, 2]]
     """
 
-    reflected_tiles = generate_empty_board([])
+    reflected_tiles = generate_empty_board()
 
     # Flip game board contents over a mirror line between rows 2 and 3.
     if vertical:
@@ -332,14 +335,14 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
     if upwards:
         for col in range(BOARD_SIDE_LENGTH):
             for row in range(BOARD_SIDE_LENGTH - 1):
-                first_tile = game_tiles[row][col]
-                second_tile = game_tiles[row + 1][col]
+                top_tile = game_tiles[row][col]
+                bottom_tile = game_tiles[row + 1][col]
 
                 # Two non-empty tiles of the same number in the same column
                 # are on top of each other.
-                if first_tile == second_tile and first_tile + second_tile != 0:
-                    merge_score += first_tile + second_tile
-                    merged_tiles[row][col] = first_tile + second_tile
+                if top_tile == bottom_tile and top_tile + bottom_tile != 0:
+                    merge_score += top_tile + bottom_tile
+                    merged_tiles[row][col] = top_tile + bottom_tile
 
                     merged_tiles[row + 1][col] = 0
 
@@ -348,14 +351,14 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
         for row in range(BOARD_SIDE_LENGTH):
             for col in range(BOARD_SIDE_LENGTH - 1):
 
-                first_tile = game_tiles[row][col]
-                second_tile = game_tiles[row][col + 1]
+                left_tile = game_tiles[row][col]
+                right_tile = game_tiles[row][col + 1]
 
                 # Two non-empty tiles of the same number in the same row
                 # are beside each other.
-                if first_tile == second_tile and first_tile + second_tile != 0:
-                    merge_score += first_tile + second_tile
-                    merged_tiles[row][col] = first_tile + second_tile
+                if left_tile == right_tile and left_tile + right_tile != 0:
+                    merge_score += left_tile + right_tile
+                    merged_tiles[row][col] = left_tile + right_tile
 
                     merged_tiles[row][col + 1] = 0
 
@@ -370,8 +373,8 @@ def add_random_tile(game_tiles: list) -> list:
 
     # Place new tile in random, empty tile spot. 
     while True:
-        row = randint(0, 3)
-        col = randint(0, 3)
+        row = randint(0, BOARD_SIDE_LENGTH - 1)
+        col = randint(0, BOARD_SIDE_LENGTH - 1)
 
         if game_tiles[row][col] == 0:
             game_tiles[row][col] = random_tile
@@ -522,9 +525,9 @@ def game_outcome(game_tiles: list, won: bool) -> str:
     "loss"
 
     >>> game_outcome([2048, 4, 0, 8], 
-                      [4, 0, 32, 512], 
-                      [0, 2, 32, 0], 
-                      [2, 0, 1024, 2]], True)
+                     [4, 0, 32, 512], 
+                     [0, 2, 32, 0], 
+                     [2, 0, 1024, 2]], True)
     "in progress"
     """
 
@@ -563,10 +566,7 @@ def game_round(key_bind_mode: dict) -> int:
 
     won = False
 
-    game_tiles = generate_empty_board([])
-
-    game_tiles[0][0] = 524288
-    game_tiles[3][0] = 524288
+    game_tiles = generate_empty_board()
 
     # Start with 2 tiles. 
     for i in range(STARTING_TILES):
@@ -579,13 +579,8 @@ def game_round(key_bind_mode: dict) -> int:
 
     print_board(game_tiles)
 
-    while game_outcome(game_tiles, won) != "loss":
-        # The tiles hold up to 6 digits.
-        if check_tile(game_tiles, MAX_TILE): 
-            print("The game has ended.")
-            return round_score
-            
-        elif check_tile(game_tiles, WINNING_TILE) and not won:
+    while game_outcome(game_tiles, won) != "loss":  
+        if check_tile(game_tiles, WINNING_TILE) and not won:
             print("\n😱 Hooray! You won! 😱")
             won = True
             program = get_user_choice(True)
@@ -603,6 +598,11 @@ def game_round(key_bind_mode: dict) -> int:
                                     direction, key_bind_mode)
         round_score += move_score
 
+        # End the game when a seven digit tile has been created.
+        if check_tile(game_tiles, MAX_TILE):
+            print("👍 The game has ended. 👍\n")
+            break
+
         # If the board does not have an empty square or the move performed did 
         # not change the game board, do not add a random tile. 
         if check_tile(new_game_tiles, EMPTY_TILE) and \
@@ -610,7 +610,7 @@ def game_round(key_bind_mode: dict) -> int:
 
             new_game_tiles = add_random_tile(new_game_tiles)
             game_tiles = new_game_tiles 
-
+        
         print_board(new_game_tiles)
 
     print() 
@@ -633,18 +633,17 @@ def main():
     print("##      ##  ##      ##  ##  ##")
     print("######  ######      ##  ######\n")
     
-
     print("Overview of the Game: \n")
     print("1. The objective of the game is to create the tile 2048 by merging"
-          + " tiles together.")
+          + "\ntiles together.")
     print("2. You can shift the tiles on the game board in 4 directions:"
-          + " up, down, right, and left.")
+          + "\nup, down, right, and left.")
     print("3. When two tiles of the same number are next to each other during"
-          + " a merge, they will add together and merge into the same tile.")
-    print("4. 2 and 4 tiles will be added to the board in random, empty tile" 
-          + " spots.")
+          + "\na merge, they will add together and merge into the same tile.")
+    print("4. After every move that changes the location of at least one tile" 
+          + ",\na 2 or 4 tile while be added to a random, empty tile spot.")
     print("5. You lose when there are no more empty tiles and no more"
-          + " possible moves.\n")
+          + "\npossible moves.\n") 
 
     high_score = 0
 
@@ -671,6 +670,7 @@ def main():
         elif program == SETTINGS: 
             print("\nCurrent Keybinds: {}\n".format(key_bind_mode))
             key_bind_mode = choose_key_bind(key_bind_mode)
+
         else:
              print("Invalid menu choice. Please try again.")
 
