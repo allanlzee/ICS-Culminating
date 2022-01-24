@@ -95,14 +95,31 @@ def print_board(game_tiles: str):
     for row in range(BOARD_SIDE_LENGTH):
         # Top horizontal line with corners.
         if row == 0:
-            print("╔" + "═" * GAME_BOARD_WIDTH + "╗")
+            print("╔", end = "")
+            for i in range(BOARD_SIDE_LENGTH):
+                # End of the top horizontal line will have a corner.
+                if i == BOARD_SIDE_LENGTH - 1: 
+                    print("═" * TILE_LENGTH + "╗")
+                else: 
+                    print("═" * TILE_LENGTH + "╦", end = "")
+            
+            # Begin a row of number tiles.
+            print("║", end="")
+
         # Middle horizontal lines with edges.
         else:
-            print("║" + "─" * GAME_BOARD_WIDTH + "║")
+            print("╠", end = "")
+            for i in range(BOARD_SIDE_LENGTH): 
+                # End of the middle horizontal line will have a row connector.
+                if i == BOARD_SIDE_LENGTH - 1: 
+                    print("═" * TILE_LENGTH + "╣")
+                else: 
+                    print("═" * TILE_LENGTH + "╬", end = "")
 
-        print("║", end="")
+            # Begin a row of number tiles.
+            print("║", end="")
 
-        # Print tiles, separated by columns.
+        # Print tiles in columns, separated by vertical lines. 
         for column in range(BOARD_SIDE_LENGTH):
             tile = game_tiles[row][column]
             if tile != 0:
@@ -111,11 +128,16 @@ def print_board(game_tiles: str):
             else: 
                 print(" " * TILE_LENGTH + "║", end="")
 
-
         print()
 
     # Bottom horizontal line with corners.
-    print("╚" + "═" * GAME_BOARD_WIDTH + "╝")
+    print("╚", end = "")
+    for i in range(BOARD_SIDE_LENGTH): 
+        # End of bottom horziontal line will have a corner.
+        if i == BOARD_SIDE_LENGTH - 1: 
+            print("═" * TILE_LENGTH + "╝", end = "")
+        else:
+            print("═" * TILE_LENGTH + "╩", end = "")
 
 
 def get_user_choice(won: bool) -> str:
@@ -614,11 +636,6 @@ def main():
           + " spots.")
     print("5. You lose when there are no more empty tiles and no more"
           + " possible moves.\n")
-
-    for i in range(GAME_BOARD_WIDTH): 
-        print(".  ", end="")
-
-    print("\n")
 
     high_score = 0
 
