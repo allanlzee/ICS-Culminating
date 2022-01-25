@@ -10,7 +10,8 @@ create keybinds for the game, based on user preference.
 __author__ = "Allan Zhou"
 
 
-from random import randint
+from random import randint 
+from random import random
 from time import sleep
 
 
@@ -32,6 +33,7 @@ TILE_BASE = 2
 WINNING_TILE = 2048
 EMPTY_TILE = 0
 MAX_TILE = 2 ** 20
+TILE_CHANCE_4 = 0.9
 
 # Keyboard Binding Constants 
 MOVES_1 = {"up": "w",
@@ -361,10 +363,17 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
 
 
 def add_random_tile(game_tiles: list) -> list:
-    """Add a 2 or 4 tile to the grid, game_tiles, at a random empty tile."""
+    """Add a 2 or 4 tile to the grid, game_tiles, at a random empty tile.
+    There is a 90 percent chance of adding a 2 tile and a 10 percent chance 
+    of adding a 4 tile."""
 
     # Random 2 or 4 tile.
-    random_tile = TILE_BASE ** randint(1, 2)
+    new_tile = random() 
+    print(new_tile)
+    if new_tile > TILE_CHANCE_4: 
+        random_tile = TILE_BASE ** 2 
+    else: 
+        random_tile = TILE_BASE
 
     # Place new tile in random, empty tile spot. 
     while True:
