@@ -102,7 +102,7 @@ def print_board(game_tiles: str):
                 if i == BOARD_SIDE_LENGTH - 1: 
                     print("═" * TILE_LENGTH + "╗")
                 else: 
-                    print("═" * TILE_LENGTH + "╦", end = "")
+                    print("═" * TILE_LENGTH + "╦", end="")
             
             # Begin a row of number tiles.
             print("║", end="")
@@ -115,7 +115,7 @@ def print_board(game_tiles: str):
                 if i == BOARD_SIDE_LENGTH - 1: 
                     print("═" * TILE_LENGTH + "╣")
                 else: 
-                    print("═" * TILE_LENGTH + "╬", end = "")
+                    print("═" * TILE_LENGTH + "╬", end="")
 
             # Begin a row of number tiles.
             print("║", end="")
@@ -137,9 +137,9 @@ def print_board(game_tiles: str):
     for i in range(BOARD_SIDE_LENGTH): 
         # End of bottom horziontal line will have a corner.
         if i == BOARD_SIDE_LENGTH - 1: 
-            print("═" * TILE_LENGTH + "╝", end = "")
+            print("═" * TILE_LENGTH + "╝", end="")
         else:
-            print("═" * TILE_LENGTH + "╩", end = "")
+            print("═" * TILE_LENGTH + "╩", end="")
 
 
 def get_user_choice(won: bool) -> str:
@@ -184,11 +184,11 @@ def get_valid_direction(key_bind_mode: dict) -> str:
 
         if valid_direction:
             return direction
-        else:
-            print("\nValid directions are {}, {}, {}, and {}. " 
-                .format(key_bind_mode["up"], key_bind_mode["left"], 
-                        key_bind_mode["down"], key_bind_mode["right"])
-                + "Please try again.")
+        
+        print("\nValid directions are {}, {}, {}, and {}. " 
+            .format(key_bind_mode["up"], key_bind_mode["left"], 
+            key_bind_mode["down"], key_bind_mode["right"])
+            + "Please try again.")
 
 
 def generate_empty_board() -> list:
@@ -338,8 +338,7 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
                 top_tile = game_tiles[row][col]
                 bottom_tile = game_tiles[row + 1][col]
 
-                # Two non-empty tiles of the same number in the same column
-                # are on top of each other.
+                # Merge two non-zero equal tiles in the same column together.
                 if top_tile == bottom_tile and top_tile + bottom_tile != 0:
                     merge_score += top_tile + bottom_tile
                     merged_tiles[row][col] = top_tile + bottom_tile
@@ -350,12 +349,10 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
     else:
         for row in range(BOARD_SIDE_LENGTH):
             for col in range(BOARD_SIDE_LENGTH - 1):
-
                 left_tile = game_tiles[row][col]
                 right_tile = game_tiles[row][col + 1]
 
-                # Two non-empty tiles of the same number in the same row
-                # are beside each other.
+                # Merge two non-zero equal tiles in the same row together.
                 if left_tile == right_tile and left_tile + right_tile != 0:
                     merge_score += left_tile + right_tile
                     merged_tiles[row][col] = left_tile + right_tile
@@ -497,8 +494,7 @@ def game_board_move(game_tiles: list, direction: str,
         moved_tiles = reflect_game_board(moved_tiles, False)
         move_direction = "right"
 
-    # The game board did not change and no more random tiles can be added.
-    # However, there are still possible moves.
+    # The game board did not change after the move was performed. 
     if moved_tiles == game_tiles:
         print("The move {}wards does not move any tiles.\n"
               .format(move_direction))
@@ -614,6 +610,7 @@ def game_round(key_bind_mode: dict) -> int:
         print_board(new_game_tiles)
 
     print() 
+
     if not won: 
         print("😢 Sorry, you lost the game. Better luck next time. 😢\n")
 
@@ -635,11 +632,13 @@ def main():
     
     print("Overview of the Game: \n")
     print("1. The objective of the game is to create the tile 2048 by merging"
-          + "\ntiles together.")
+          + "\ntiles together on a 4 by 4 grid.")
     print("2. You can shift the tiles on the game board in 4 directions:"
-          + "\nup, down, right, and left.")
-    print("3. When two tiles of the same number are next to each other during"
-          + "\na merge, they will add together and merge into the same tile.")
+          + "\nup, down, right, and left. When tiles are shifted, they will"
+          + "\ngo as far as they can within their column/row.")
+    print("3. During a tile shift, if two tiles of the same number collide"
+          + "\nwith each other, they will merge together into one tile that"
+          + "\nhas the sum of the two tiles.")
     print("4. After every move that changes the location of at least one tile" 
           + ",\na 2 or 4 tile while be added to a random, empty tile spot.")
     print("5. You lose when there are no more empty tiles and no more"
