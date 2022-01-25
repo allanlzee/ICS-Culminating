@@ -339,10 +339,9 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
                 bottom_tile = game_tiles[row + 1][col]
 
                 # Merge two non-zero equal tiles in the same column together.
-                if top_tile == bottom_tile and top_tile + bottom_tile != 0:
+                if top_tile == bottom_tile and top_tile != 0:
                     merge_score += top_tile + bottom_tile
                     merged_tiles[row][col] = top_tile + bottom_tile
-
                     merged_tiles[row + 1][col] = 0
 
     # Merge game board leftwards.
@@ -353,10 +352,9 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
                 right_tile = game_tiles[row][col + 1]
 
                 # Merge two non-zero equal tiles in the same row together.
-                if left_tile == right_tile and left_tile + right_tile != 0:
+                if left_tile == right_tile and left_tile != 0:
                     merge_score += left_tile + right_tile
                     merged_tiles[row][col] = left_tile + right_tile
-
                     merged_tiles[row][col + 1] = 0
 
     return merged_tiles, merge_score
@@ -527,7 +525,7 @@ def game_outcome(game_tiles: list, won: bool) -> str:
     "in progress"
     """
 
-    # If the user has not already created the 2048 tile, they have won.
+    # The user has created the winning tile for the first time.
     if check_tile(game_tiles, WINNING_TILE) and not won:
         return "win"
 
@@ -564,7 +562,7 @@ def game_round(key_bind_mode: dict) -> int:
 
     game_tiles = generate_empty_board()
 
-    # Start with 2 tiles. 
+    # Start with 2 tiles, which are either 2 or 4. 
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
 
@@ -576,6 +574,7 @@ def game_round(key_bind_mode: dict) -> int:
     print_board(game_tiles)
 
     while game_outcome(game_tiles, won) != "loss":  
+        # The player has created the winning tile for the first time. 
         if check_tile(game_tiles, WINNING_TILE) and not won:
             print("\n😱 Hooray! You won! 😱")
             won = True
@@ -590,8 +589,9 @@ def game_round(key_bind_mode: dict) -> int:
         direction = get_valid_direction(key_bind_mode)
         print()
 
-        new_game_tiles, move_score = game_board_move(game_tiles, 
-                                    direction, key_bind_mode)
+        new_game_tiles, move_score = game_board_move(
+            game_tiles, direction, key_bind_mode)
+
         round_score += move_score
 
         # End the game when a seven digit tile has been created.
@@ -601,11 +601,10 @@ def game_round(key_bind_mode: dict) -> int:
 
         # If the board does not have an empty square or the move performed did 
         # not change the game board, do not add a random tile. 
-        if check_tile(new_game_tiles, EMPTY_TILE) and \
+        elif check_tile(new_game_tiles, EMPTY_TILE) and \
             new_game_tiles != game_tiles:
 
-            new_game_tiles = add_random_tile(new_game_tiles)
-            game_tiles = new_game_tiles 
+            game_tiles = add_random_tile(new_game_tiles)
         
         print_board(new_game_tiles)
 
@@ -614,7 +613,7 @@ def game_round(key_bind_mode: dict) -> int:
     if not won: 
         print("😢 Sorry, you lost the game. Better luck next time. 😢\n")
 
-    print("🎉  Total Score: {} 🎉 \n".format(round_score))
+    print("🎉 Total Score: {} 🎉 \n".format(round_score))
 
     return round_score
 
