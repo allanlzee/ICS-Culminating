@@ -369,7 +369,6 @@ def add_random_tile(game_tiles: list) -> list:
 
     # Random 2 or 4 tile.
     new_tile = random() 
-    print(new_tile)
     if new_tile > TILE_CHANCE_4: 
         random_tile = TILE_BASE ** 2 
     else: 
