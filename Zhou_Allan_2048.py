@@ -36,12 +36,12 @@ MAX_TILE = 2 ** 20
 TILE_CHANCE_4 = 0.9
 
 # Keyboard Binding Constants 
-MOVES_1 = {"up": "w",
+MOVES_WASD = {"up": "w",
            "left": "a",
            "down": "s",
            "right": "d"}
 
-MOVES_2 = {"up": "e",
+MOVES_ESDF = {"up": "e",
            "left": "s",
            "down": "d",
            "right": "f"}
@@ -63,10 +63,10 @@ def choose_key_bind(key_bind: str) -> dict:
 
         if key_bind in VALID_GAME_CHOICES:
             if key_bind == "1":
-                key_bind_mode = MOVES_1
+                key_bind_mode = MOVES_WASD
 
             elif key_bind == "2":
-                key_bind_mode = MOVES_2
+                key_bind_mode = MOVES_ESDF
 
             elif key_bind == "3":
                 # Set up a new dictionary for key binding. 
@@ -163,9 +163,9 @@ def get_user_choice(won: bool) -> str:
         if program in VALID_GAME_CHOICES:
             return program
         else:
-            print("{} is not a valid choice. Valid choices are"
+            print("'{}' is not a valid choice. Valid choices are "
                   .format(program)
-                  + " ({}) for play, ({}) for quit, and ({}) for settings.\n"
+                  + "({}) for play, ({}) for quit, and ({}) for settings.\n"
                   .format(PLAY, QUIT, SETTINGS))
 
 
@@ -369,7 +369,7 @@ def add_random_tile(game_tiles: list) -> list:
 
     # Random 2 or 4 tile.
     new_tile = random() 
-    
+
     if new_tile > TILE_CHANCE_4: 
         random_tile = TILE_BASE ** 2 
     else: 
@@ -461,7 +461,11 @@ def game_board_move(game_tiles: list, direction: str,
     >>> game_board_move([[0, 0, 0, 2], 
                          [0, 2, 0, 0], 
                          [0, 4, 0, 0], 
-                         [2, 0, 0, 0]], "w")
+                         [2, 0, 0, 0]], "w", 
+                         {"up": "w",
+                          "left": "a",
+                          "down": "s",
+                          "right": "d"})
     ([[2, 2, 0, 2], 
       [0, 4, 0, 0], 
       [0, 0, 0, 0], 
@@ -470,7 +474,11 @@ def game_board_move(game_tiles: list, direction: str,
     >>> game_board_move([[2, 2, 0, 2], 
                          [0, 4, 0, 0], 
                          [0, 0, 0, 0], 
-                         [0, 0, 0, 0]], "a")
+                         [0, 0, 0, 0]], "a", 
+                         {"up": "w",
+                          "left": "a",
+                          "down": "s",
+                          "right": "d"})
     ([[4, 2, 0, 0], 
       [4, 0, 0, 0], 
       [0, 0, 0, 0], 
@@ -561,7 +569,7 @@ def game_outcome(game_tiles: list, won: bool) -> str:
 
 
 def game_round(key_bind_mode: dict) -> int:
-    """Plays one single round of 2048. Return the score of the round."""
+    """Play one single round of 2048. Return the score of the round."""
 
     # Every time two tiles are merged, the value of their sum is added to the
     # score.
@@ -655,12 +663,13 @@ def main():
     high_score = 0
 
     program = PLAY
-    key_bind_mode = MOVES_1
+    key_bind_mode = MOVES_WASD
 
     while program != QUIT:
         program = get_user_choice(False)
 
         if program == PLAY:
+            # Run a single round of 2048. 
             print("\nGame starting...\n")
             sleep(TIME_DELAY)
             round_score = game_round(key_bind_mode)
