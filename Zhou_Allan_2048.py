@@ -162,7 +162,7 @@ def get_user_choice(won: bool) -> str:
         if program in VALID_GAME_CHOICES:
             return program
         else:
-            print("'{}' is not a valid choice. Valid choices are "
+            print("Invalid choice. Valid choices are "
                   .format(program)
                   + "({}) for play, ({}) for quit, and ({}) for settings.\n"
                   .format(PLAY, QUIT, SETTINGS))
@@ -579,6 +579,9 @@ def game_round(key_bind_mode: dict) -> int:
     # Start with 2 tiles, which are either 2 or 4. 
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
+
+    game_tiles[0][0] = 1024
+    game_tiles[0][1] = 1024
 
     for key in key_bind_mode: 
         print("{} : {}".format(key, key_bind_mode[key]))
