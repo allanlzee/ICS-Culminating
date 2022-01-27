@@ -37,24 +37,25 @@ TILE_CHANCE_4 = 0.9
 
 # Keyboard Binding Constants 
 MOVES_WASD = {"up": "w",
-           "left": "a",
-           "down": "s",
-           "right": "d", 
-           "quit" : "q"}
+              "left": "a",
+              "down": "s",
+              "right": "d", 
+              "quit" : "q"}
 
 MOVES_ESDF = {"up": "e",
-           "left": "s",
-           "down": "d",
-           "right": "f", 
-           "quit": "q"}
+              "left": "s",
+              "down": "d",
+              "right": "f", 
+              "quit": "q"}
 
 
 def choose_key_bind(key_bind_mode: dict) -> dict: 
     """Return the user's choice for the keybinding used to perform moves 
-    during a round of 2048. Users have the option to create their own
-    custom keybind."""
+    during a round of 2048 as a dictionary. Users have the option to create 
+    their own custom keybind."""
 
     print("\nCurrent Keybinds: {}\n".format(key_bind_mode))
+
     # List the possible key bind options.
     print("1. w (up) a (left) s (down) d (right) q (quit) Default Bind.")
     print("2. e (up) s (left) d (down) f (right) q (quit) Bind.")
@@ -85,9 +86,7 @@ def choose_key_bind(key_bind_mode: dict) -> dict:
                                     .format(key)).strip()
                     key_bind_mode[key] = new_value
 
-                print()
-
-            print("🤏 Using key binding {}. 🤏\n".format(key_bind_mode))
+            print("\n🤏 Using key binding {}. 🤏\n".format(key_bind_mode))
                 
             return key_bind_mode
 
@@ -95,7 +94,7 @@ def choose_key_bind(key_bind_mode: dict) -> dict:
             print("Invalid keybind choice. Please try again.\n")
 
 
-def print_board(game_tiles: str):
+def print_board(game_tiles: list):
     """Print the game board, using the tile numbers in the two dimensional
     list, game_tiles."""
 
@@ -146,10 +145,9 @@ def print_board(game_tiles: str):
 
 
 def get_user_choice(won: bool) -> str:
-    """Prompt the user to enter a game choice, 1, 2, or 3, which corresponds 
-    to play, quit, and edit game settings, respectively. Return the valid 
-    choice as a string. If won is True, give option to continue the game 
-    instead of playing the game. """
+    """Prompt the user to enter a game choice, which corresponds to play, 
+    quit, and game settings. Return the valid choice as a string. If won is 
+    True, give option to continue the game instead of playing the game."""
 
     while True:
         if won:
@@ -454,17 +452,18 @@ def move_left(game_tiles: list) -> tuple:
 def game_board_move(game_tiles: list, direction: str, 
                     key_bind_mode: dict) -> tuple:
     """Perform one move of the game board, in any direction (up, down, left, 
-    or right). Return the game board after the move and the points earned from
+    or right). Return the game tiles after the move and the points earned from
     the move. 
 
     >>> game_board_move([[0, 0, 0, 2], 
                          [0, 2, 0, 0], 
                          [0, 4, 0, 0], 
                          [2, 0, 0, 0]], "w", 
-                         {"up": "w",
-                          "left": "a",
-                          "down": "s",
-                          "right": "d"})
+                         {"up" : "w",
+                          "left" : "a",
+                          "down" : "s",
+                          "right" : "d", 
+                          "quit" : "q"})
     ([[2, 2, 0, 2], 
       [0, 4, 0, 0], 
       [0, 0, 0, 0], 
@@ -474,10 +473,11 @@ def game_board_move(game_tiles: list, direction: str,
                          [0, 4, 0, 0], 
                          [0, 0, 0, 0], 
                          [0, 0, 0, 0]], "a", 
-                         {"up": "w",
-                          "left": "a",
-                          "down": "s",
-                          "right": "d"})
+                         {"up" : "w",
+                          "left" : "a",
+                          "down" : "s",
+                          "right" : "d", 
+                          "quit" : "q"})
     ([[4, 2, 0, 0], 
       [4, 0, 0, 0], 
       [0, 0, 0, 0], 
