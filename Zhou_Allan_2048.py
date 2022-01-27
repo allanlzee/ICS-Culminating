@@ -54,7 +54,7 @@ def choose_key_bind(key_bind_mode: dict) -> dict:
     during a round of 2048. Users have the option to create their own
     custom keybind."""
 
-    print("Current Keybinds: {}\n".format(key_bind_mode))
+    print("\nCurrent Keybinds: {}\n".format(key_bind_mode))
     # List the possible key bind options.
     print("1. w (up) a (left) s (down) d (right) q (quit) Default Bind.")
     print("2. e (up) s (left) d (down) f (right) q (quit) Bind.")
@@ -189,7 +189,7 @@ def get_valid_move(key_bind_mode: dict) -> str:
         print("\nValid moves are {}, {}, {}, {}, and {}. " 
             .format(key_bind_mode["up"], key_bind_mode["left"], 
             key_bind_mode["down"], key_bind_mode["right"], 
-            key_bind_mode["quit"]) + "Please try again.")
+            key_bind_mode["quit"]) + "Please try again.\n")
 
 
 def generate_empty_board() -> list:
@@ -580,6 +580,9 @@ def game_round(key_bind_mode: dict) -> int:
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
 
+    game_tiles[0][0] = 1024 
+    game_tiles[0][1] = 1024
+
     for key in key_bind_mode: 
         print("{} : {}".format(key, key_bind_mode[key]))
 
@@ -592,15 +595,15 @@ def game_round(key_bind_mode: dict) -> int:
             print("😱 Hooray! You won! 😱\n")
             won = True
             choice = get_user_choice(True)
-            print()
             
             # Ensure player enters valid game choice.
             while True: 
                 if choice == QUIT:
-                    print("Exiting Game...\n")
+                    print("\nExiting Game...\n")
                     sleep(TIME_DELAY)
                     return round_score
                 elif choice == PLAY:
+                    print()
                     print_board(game_tiles)
                     break
                 elif choice == SETTINGS:
@@ -620,7 +623,7 @@ def game_round(key_bind_mode: dict) -> int:
                 + "round? y/n: ")
 
                 if choice == "y": 
-                    print("\nQuitting Game...\n")
+                    print("\n💀 Quitting Game... 💀\n")
                     sleep(TIME_DELAY)
                     return round_score
 
@@ -685,7 +688,6 @@ def main():
           + "\npossible moves.\n") 
 
     high_score = 0
-
     program = PLAY
     key_bind_mode = MOVES_WASD
 
@@ -713,7 +715,7 @@ def main():
             key_bind_mode = choose_key_bind(key_bind_mode)
 
         else:
-             print("Invalid menu choice. Please try again.")
+            print("Invalid menu choice. Please try again.")
 
 
 if __name__ == "__main__":
