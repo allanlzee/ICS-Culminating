@@ -580,9 +580,6 @@ def game_round(key_bind_mode: dict) -> int:
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
 
-    game_tiles[0][0] = 1024
-    game_tiles[0][1] = 1024
-
     for key in key_bind_mode: 
         print("{} : {}".format(key, key_bind_mode[key]))
 
