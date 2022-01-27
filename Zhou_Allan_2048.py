@@ -86,7 +86,7 @@ def choose_key_bind(key_bind_mode: dict) -> dict:
                                     .format(key)).strip()
                     key_bind_mode[key] = new_value
 
-            print("\n🤏 Using key binding {}. 🤏\n".format(key_bind_mode))
+            print("\nUsing key binding {}.\n".format(key_bind_mode))
                 
             return key_bind_mode
 
@@ -589,7 +589,7 @@ def game_round(key_bind_mode: dict) -> int:
     while game_outcome(game_tiles, won) != "loss":  
         # The player has created the winning tile for the first time. 
         if check_tile(game_tiles, WINNING_TILE) and not won:
-            print("😱 Hooray! You won! 😱\n")
+            print("Hooray! You won!\n")
             won = True
             choice = get_user_choice(True)
             
@@ -620,7 +620,7 @@ def game_round(key_bind_mode: dict) -> int:
                 + "round? y/n: ")
 
                 if choice == "y": 
-                    print("\n💀 Quitting Game... 💀\n")
+                    print("\nQuitting Game...\n")
                     sleep(TIME_DELAY)
                     return round_score
 
@@ -641,7 +641,7 @@ def game_round(key_bind_mode: dict) -> int:
 
             # End the game when a seven digit tile has been created.
             if check_tile(game_tiles, MAX_TILE):
-                print("👍 The game has ended. 👍\n")
+                print("The game has ended.\n")
                 break
 
             # If the board does not have an empty square or the move performed did 
@@ -654,7 +654,7 @@ def game_round(key_bind_mode: dict) -> int:
             print_board(new_game_tiles)
 
     if not won: 
-        print("😢 Sorry, you lost the game. Better luck next time. 😢\n")
+        print("Sorry, you lost the game. Better luck next time.\n")
 
     return round_score
 
@@ -697,16 +697,16 @@ def main():
             sleep(TIME_DELAY)
             round_score = game_round(key_bind_mode)
 
-            print("🎉 Total Score: {} 🎉 \n".format(round_score))
+            print("Total Score: {}\n".format(round_score))
 
             if round_score > high_score: 
                 high_score = round_score
 
         elif program == QUIT:
             if high_score != 0:
-                print("\n🔥 Your highest score was {}. 🔥.".format(high_score))
+                print("\nYour highest score was {}.".format(high_score))
 
-            print("\n👋 Thanks for playing 2048. Goodbye! 👋")
+            print("\nThanks for playing 2048. Goodbye!")
 
         elif program == SETTINGS: 
             key_bind_mode = choose_key_bind(key_bind_mode)
