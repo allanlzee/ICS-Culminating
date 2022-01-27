@@ -172,7 +172,7 @@ def get_user_choice(won: bool) -> str:
 
 def get_valid_move(key_bind_mode: dict) -> str:
     """Prompt the user to enter a board move corresponding to up, left, down, 
-    and right. Return the valid move as a string."""
+    right, or quit. Return the valid move as a string."""
 
     while True:
         move = input("Enter a direction to move: ")
@@ -213,7 +213,7 @@ def generate_empty_board() -> list:
 
 def tile_shift(game_tiles: list, upwards: bool) -> list:
     """Shift the tiles in the grid game_tiles in the upwards or leftwards 
-    direction, based on the value of upwards. Return the new game tiles as 
+    direction, based on the boolean upwards. Return the new game tiles as 
     a two dimensional list. 
 
     >>> tile_shift([[0, 0, 0, 0],
@@ -263,8 +263,9 @@ def tile_shift(game_tiles: list, upwards: bool) -> list:
 
 
 def reflect_game_board(game_tiles: list, vertical: bool) -> list:
-    """Shift the tiles in the grid game_tiles in the leftwards direction. 
-    Return the new game tiles as a two dimensional list. 
+    """Reflect the tiles in the grid game_tiles vertically or horizontally, 
+    depending on the boolean vertical. Return the new game tiles as a two 
+    dimensional list. 
 
     >>> reflect_game_board([[0, 0, 2, 2], 
                             [0, 0, 0, 4], 
@@ -305,9 +306,8 @@ def reflect_game_board(game_tiles: list, vertical: bool) -> list:
 
 def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
     """Merge the tiles in the grid game_tiles in the upwards or leftwards 
-    direction, based on the value of direction. Tiles can merge if they are 
-    next to each other in the direction of the merge and are the same number. 
-    Return the merged game tiles as a two dimensional list. 
+    direction, based on the boolean direction. Return the merged game tiles 
+    as a two dimensional list. 
 
     >>> merge_game_board([[4, 2, 2, 8], 
                           [4, 4, 0, 8], 
@@ -387,8 +387,8 @@ def add_random_tile(game_tiles: list) -> list:
 
 
 def check_tile(game_tiles: list, value: int) -> bool:
-    """Return True if value is in the game board, game_tiles. 
-    Otherwise, return False.
+    """Return True if value is in the game board, game_tiles. Otherwise, 
+    return False.
 
     >>> check_tile([[2048, 0, 0, 0], 
                     [0, 0, 0, 0], 
@@ -430,7 +430,7 @@ def move_up(game_tiles: list) -> tuple:
 
 def move_left(game_tiles: list) -> tuple:
     """Perform one move of the game board, game_tiles, leftwards. One move 
-    leftwards consists of two tile shifts left, with on leftwards tile merge
+    leftwards consists of two tile shifts left, with one leftwards tile merge
     in between. Return the game board after the left move and the score
     accumulated from the move.
 
@@ -518,9 +518,9 @@ def game_board_move(game_tiles: list, direction: str,
 
 def game_outcome(game_tiles: list, won: bool) -> str:
     """Return "win" if the user has won the round by creating the tile 
-    2048 in game_tiles and the user has not won in a previous move. Return 
-    "in progress" if any possible moves can be made in game_tiles. Otherwise, 
-    return "loss".
+    2048 in game_tiles and the user has not won in a previous move. If the 
+    user has not won yet, Return "in progress" if any possible moves can be 
+    made in game_tiles. Otherwise, return "loss".
     
     >>> game_outcome([[0, 2, 2, 8], 
                       [4, 0, 0, 8], 
@@ -568,7 +568,7 @@ def game_outcome(game_tiles: list, won: bool) -> str:
 
 
 def game_round(key_bind_mode: dict) -> int:
-    """Play one single round of 2048. Return the score of the round."""
+    """Play one single round of 2048. Return the score from the round."""
 
     # When two tiles are merged, the value of their sum is added to the score.
     round_score = 0
@@ -675,7 +675,7 @@ def main():
           + "\ntiles together on a 4 by 4 grid.")
     print("2. You can shift the tiles on the game board in 4 directions:"
           + "\nup, down, right, and left. When tiles are shifted, they will"
-          + "\ngo as far as they can within their column/row.")
+          + "\ngo as far as they can within their respective column/row.")
     print("3. During a tile shift, if two tiles of the same number collide"
           + "\nwith each other, they will merge together into one tile that"
           + "\nhas the sum of the two tiles.")
