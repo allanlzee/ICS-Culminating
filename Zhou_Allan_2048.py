@@ -39,22 +39,25 @@ TILE_CHANCE_4 = 0.9
 MOVES_1 = {"up": "w",
            "left": "a",
            "down": "s",
-           "right": "d"}
+           "right": "d", 
+           "quit" : "q"}
 
 MOVES_2 = {"up": "e",
            "left": "s",
            "down": "d",
-           "right": "f"}
+           "right": "f", 
+           "quit": "q"}
 
 
-def choose_key_bind(key_bind: str) -> dict: 
-    """Return the user's choice for the keybinding used to perform moves in 
-    different directions for 2048. Users have the option to create their own
+def choose_key_bind(key_bind_mode: dict) -> dict: 
+    """Return the user's choice for the keybinding used to perform moves 
+    during a round of 2048. Users have the option to create their own
     custom keybind."""
 
+    print("Current Keybinds: {}\n".format(key_bind_mode))
     # List the possible key bind options.
-    print("1. w (up) a (left) s (down) d (right) Default Bind.")
-    print("2. e (up) s (left) d (down) f (right) Bind.")
+    print("1. w (up) a (left) s (down) d (right) q (quit) Default Bind.")
+    print("2. e (up) s (left) d (down) f (right) q (quit) Bind.")
     print("3. Custom Bind.\n")
 
     while True:
@@ -73,9 +76,10 @@ def choose_key_bind(key_bind: str) -> dict:
                 key_bind_mode = {"up": None,
                                  "left": None,
                                  "down": None,
-                                 "right": None}
+                                 "right": None, 
+                                 "quit": None}
 
-                # Prompt user for new key binds in 4 directions.
+                # Prompt user for new key binds for the 5 possible moves.
                 for key in key_bind_mode:
                     new_value = input("Your key for the move {}: "
                                     .format(key)).strip()
@@ -105,9 +109,6 @@ def print_board(game_tiles: str):
                     print("═" * TILE_LENGTH + "╗")
                 else: 
                     print("═" * TILE_LENGTH + "╦", end="")
-            
-            # Begin a row of number tiles.
-            print("║", end="")
 
         # Middle horizontal lines with edges.
         else:
@@ -119,8 +120,8 @@ def print_board(game_tiles: str):
                 else: 
                     print("═" * TILE_LENGTH + "╬", end="")
 
-            # Begin a row of number tiles.
-            print("║", end="")
+        # Begin a row of number tiles.
+        print("║", end="")
 
         # Print tiles in columns, separated by vertical lines. 
         for column in range(BOARD_SIDE_LENGTH):
@@ -139,7 +140,7 @@ def print_board(game_tiles: str):
     for i in range(BOARD_SIDE_LENGTH): 
         # End of bottom horziontal line will have a corner.
         if i == BOARD_SIDE_LENGTH - 1: 
-            print("═" * TILE_LENGTH + "╝", end="")
+            print("═" * TILE_LENGTH + "╝")
         else:
             print("═" * TILE_LENGTH + "╩", end="")
 
@@ -155,7 +156,7 @@ def get_user_choice(won: bool) -> str:
             print("1. Continue Game.\n2. Exit Game.\n3. Game Settings.\n")
         else:
             print("Main Menu\n" + "═" * len("Main Menu"))
-            print("1. Play Game. \n2. Quit.\n3. Game Settings.\n")
+            print("1. Play Game. \n2. Quit 2048.\n3. Game Settings.\n")
 
         program = input("Your choice: ")
 
@@ -169,28 +170,26 @@ def get_user_choice(won: bool) -> str:
                   .format(PLAY, QUIT, SETTINGS))
 
 
-def get_valid_direction(key_bind_mode: dict) -> str:
-    """Prompt the user to enter a direction w, a, s, or d, which correspond to 
-    up, left, down, and right, respectively. Return the valid direction as a
-    string."""
+def get_valid_move(key_bind_mode: dict) -> str:
+    """Prompt the user to enter a board move corresponding to up, left, down, 
+    and right. Return the valid move as a string."""
 
     while True:
-        direction = input("\nEnter a direction to move: ")
-
+        move = input("Enter a direction to move: ")
         valid_direction = False 
 
         # Ensure the direction entered is valid.
         for key in key_bind_mode: 
-            if key_bind_mode[key] == direction:
+            if key_bind_mode[key] == move:
                 valid_direction = True
 
         if valid_direction:
-            return direction
+            return move
         
-        print("\nValid directions are {}, {}, {}, and {}. " 
+        print("\nValid moves are {}, {}, {}, {}, and {}. " 
             .format(key_bind_mode["up"], key_bind_mode["left"], 
-            key_bind_mode["down"], key_bind_mode["right"])
-            + "Please try again.")
+            key_bind_mode["down"], key_bind_mode["right"], 
+            key_bind_mode["quit"]) + "Please try again.")
 
 
 def generate_empty_board() -> list:
@@ -365,7 +364,7 @@ def merge_game_board(game_tiles: list, upwards: bool) -> tuple:
 def add_random_tile(game_tiles: list) -> list:
     """Add a 2 or 4 tile to the grid, game_tiles, at a random empty tile.
     There is a 90 percent chance of adding a 2 tile and a 10 percent chance 
-    of adding a 4 tile."""
+    of adding a 4 tile. Return game_tiles after a tile is added."""
 
     # Random 2 or 4 tile.
     new_tile = random() 
@@ -563,10 +562,8 @@ def game_outcome(game_tiles: list, won: bool) -> str:
 def game_round(key_bind_mode: dict) -> int:
     """Plays one single round of 2048. Return the score of the round."""
 
-    # Every time two tiles are merged, the value of their sum is added to the
-    # score.
+    # When two tiles are merged, the value of their sum is added to the score.
     round_score = 0
-
     won = False
 
     game_tiles = generate_empty_board()
@@ -579,50 +576,77 @@ def game_round(key_bind_mode: dict) -> int:
         print("{} : {}".format(key, key_bind_mode[key]))
 
     print()
-
     print_board(game_tiles)
 
     while game_outcome(game_tiles, won) != "loss":  
         # The player has created the winning tile for the first time. 
         if check_tile(game_tiles, WINNING_TILE) and not won:
-            print("\n😱 Hooray! You won! 😱")
+            print("😱 Hooray! You won! 😱\n")
             won = True
-            program = get_user_choice(True)
+            choice = get_user_choice(True)
+            print()
+            
+            # Ensure player enters valid game choice.
+            while True: 
+                if choice == QUIT:
+                    print("Exiting Game...\n")
+                    sleep(TIME_DELAY)
+                    return round_score
+                elif choice == PLAY:
+                    print_board(game_tiles)
+                    break
+                elif choice == SETTINGS:
+                    key_bind_mode = choose_key_bind(key_bind_mode)
+                    print_board(game_tiles)
+                    break
+                else: 
+                    print("Invalid choice, please try again.")
 
-            if program == QUIT:
-                print("Exiting Game...\n")
-                return
-            else:
-                print_board(game_tiles)
-
-        direction = get_valid_direction(key_bind_mode)
+        move = get_valid_move(key_bind_mode)
         print()
-
-        new_game_tiles, move_score = game_board_move(
-            game_tiles, direction, key_bind_mode)
-
-        round_score += move_score
-
-        # End the game when a seven digit tile has been created.
-        if check_tile(game_tiles, MAX_TILE):
-            print("👍 The game has ended. 👍\n")
-            break
-
-        # If the board does not have an empty square or the move performed did 
-        # not change the game board, do not add a random tile. 
-        elif check_tile(new_game_tiles, EMPTY_TILE) and \
-            new_game_tiles != game_tiles:
-
-            game_tiles = add_random_tile(new_game_tiles)
         
-        print_board(new_game_tiles)
+        # User decides to quit in the middle of the round.
+        if move == key_bind_mode["quit"]: 
+            while True: 
+                choice = input("Are you sure you want to quit the current " 
+                + "round? y/n: ")
 
-    print() 
+                if choice == "y": 
+                    print("\nQuitting Game...\n")
+                    sleep(TIME_DELAY)
+                    return round_score
+
+                elif choice == "n": 
+                    # Print the game board and return to top of game loop. 
+                    print()
+                    print_board(game_tiles)
+                    break 
+
+                else: 
+                    print("\nInvalid choice, please try again.\n")
+        
+        else: 
+            new_game_tiles, move_score = game_board_move(
+                game_tiles, move, key_bind_mode)
+
+            round_score += move_score
+
+            # End the game when a seven digit tile has been created.
+            if check_tile(game_tiles, MAX_TILE):
+                print("👍 The game has ended. 👍\n")
+                break
+
+            # If the board does not have an empty square or the move performed did 
+            # not change the game board, do not add a random tile. 
+            elif check_tile(new_game_tiles, EMPTY_TILE) and \
+                new_game_tiles != game_tiles:
+
+                game_tiles = add_random_tile(new_game_tiles)
+            
+            print_board(new_game_tiles)
 
     if not won: 
         print("😢 Sorry, you lost the game. Better luck next time. 😢\n")
-
-    print("🎉 Total Score: {} 🎉 \n".format(round_score))
 
     return round_score
 
@@ -665,6 +689,8 @@ def main():
             sleep(TIME_DELAY)
             round_score = game_round(key_bind_mode)
 
+            print("🎉 Total Score: {} 🎉 \n".format(round_score))
+
             if round_score > high_score: 
                 high_score = round_score
 
@@ -675,7 +701,6 @@ def main():
             print("\n👋 Thanks for playing 2048. Goodbye! 👋")
 
         elif program == SETTINGS: 
-            print("\nCurrent Keybinds: {}\n".format(key_bind_mode))
             key_bind_mode = choose_key_bind(key_bind_mode)
 
         else:
