@@ -4,6 +4,9 @@ characters.
 
 The program also has a game settings option, which can be used to change or
 create keybinds for the game, based on user preference.
+
+Constants in the program can be edited to play 2048 on a differently sized 
+game board. However, the game will by default be played on a 4 by 4 grid.
 """
 
 
@@ -54,7 +57,8 @@ def choose_key_bind(key_bind_mode: dict) -> dict:
     during a round of 2048 as a dictionary. Users have the option to create 
     their own custom keybind."""
 
-    print("\nCurrent Keybinds: {}\n".format(key_bind_mode))
+    print("\nCurrent Keybinds: ")
+    print_key_bind(key_bind_mode)
 
     # List the possible key bind options.
     print("1. w (up) a (left) s (down) d (right) q (quit) Default Bind.")
@@ -63,7 +67,6 @@ def choose_key_bind(key_bind_mode: dict) -> dict:
 
     while True:
         key_bind = input("Choose Keybind: ")
-        print()
 
         if key_bind in VALID_GAME_CHOICES:
             if key_bind == "1":
@@ -81,17 +84,29 @@ def choose_key_bind(key_bind_mode: dict) -> dict:
                                  "quit": None}
 
                 # Prompt user for new key binds for the 5 possible moves.
+                print()
                 for key in key_bind_mode:
                     new_value = input("Your key for the move {}: "
                                     .format(key)).strip()
                     key_bind_mode[key] = new_value
 
-            print("\nUsing key binding {}.\n".format(key_bind_mode))
+            print("\nUsing key binding: ")
+            print_key_bind(key_bind_mode)
                 
             return key_bind_mode
 
         else:
             print("Invalid keybind choice. Please try again.\n")
+
+
+def print_key_bind(key_bind_mode: dict): 
+    """Print the key-value pairs in key_bind_mode. The key-value pairs in 
+    the dictionary key_bind_mode link specific keys to moves in the game."""
+
+    for key in key_bind_mode: 
+        print("{} : {}".format(key, key_bind_mode[key]))
+
+    print()
 
 
 def print_board(game_tiles: list):
@@ -156,16 +171,15 @@ def get_user_choice(won: bool) -> str:
             print("Main Menu\n" + "═" * len("Main Menu"))
             print("1. Play Game. \n2. Quit 2048.\n3. Game Settings.\n")
 
-        program = input("Your choice: ")
+        choice = input("Your choice: ")
 
         # Ensure that user enters a valid game choice.
-        if program in VALID_GAME_CHOICES:
-            return program
+        if choice in VALID_GAME_CHOICES:
+            return choice
         else:
-            print("Invalid choice. Valid choices are "
-                  .format(program)
-                  + "({}) for play, ({}) for quit, and ({}) for settings.\n"
-                  .format(PLAY, QUIT, SETTINGS))
+            print("Invalid choice. Valid choices are " + 
+            "({}) for play, ({}) for quit, and ({}) for settings.\n"
+            .format(PLAY, QUIT, SETTINGS))
 
 
 def get_valid_move(key_bind_mode: dict) -> str:
@@ -174,14 +188,15 @@ def get_valid_move(key_bind_mode: dict) -> str:
 
     while True:
         move = input("Enter a direction to move: ")
-        valid_direction = False 
+        valid_move = False 
 
         # Ensure the direction entered is valid.
         for key in key_bind_mode: 
             if key_bind_mode[key] == move:
-                valid_direction = True
+                valid_move = True
+                break
 
-        if valid_direction:
+        if valid_move:
             return move
         
         print("\nValid moves are {}, {}, {}, {}, and {}. " 
@@ -364,7 +379,6 @@ def add_random_tile(game_tiles: list) -> list:
     There is a 90 percent chance of adding a 2 tile and a 10 percent chance 
     of adding a 4 tile. Return game_tiles after a tile is added."""
 
-    # Random 2 or 4 tile.
     new_tile = random() 
 
     if new_tile > TILE_CHANCE_4: 
@@ -379,9 +393,7 @@ def add_random_tile(game_tiles: list) -> list:
 
         if game_tiles[row][col] == 0:
             game_tiles[row][col] = random_tile
-            break
-
-    return game_tiles
+            return game_tiles
 
 
 def check_tile(game_tiles: list, value: int) -> bool:
@@ -580,10 +592,7 @@ def game_round(key_bind_mode: dict) -> int:
     for i in range(STARTING_TILES):
         game_tiles = add_random_tile(game_tiles)
 
-    for key in key_bind_mode: 
-        print("{} : {}".format(key, key_bind_mode[key]))
-
-    print()
+    print_key_bind(key_bind_mode)
     print_board(game_tiles)
 
     while game_outcome(game_tiles, won) != "loss":  
