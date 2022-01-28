@@ -199,7 +199,7 @@ def get_valid_move(key_bind_mode: dict) -> str:
         if valid_move:
             return move
         
-        print("\nValid moves are {}, {}, {}, {}, and {}. " 
+        print("Valid moves are {}, {}, {}, {}, and {}. " 
             .format(key_bind_mode["up"], key_bind_mode["left"], 
             key_bind_mode["down"], key_bind_mode["right"], 
             key_bind_mode["quit"]) + "Please try again.\n")
@@ -640,7 +640,7 @@ def game_round(key_bind_mode: dict) -> int:
                     break 
 
                 else: 
-                    print("\nInvalid choice, please try again.\n")
+                    print("Invalid choice, please try again.\n")
         
         else: 
             new_game_tiles, move_score = game_board_move(game_tiles, move, 
