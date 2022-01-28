@@ -689,18 +689,18 @@ def main():
           + "\nwith each other, they will merge together into one tile that"
           + "\nhas the sum of the two tiles.")
     print("4. After every move that changes the location of at least one tile" 
-          + ",\na 2 or 4 tile while be added to a random, empty tile spot.")
+          + ",\na 2 or 4 tile will be added to a random, empty tile spot.")
     print("5. You lose when there are no more empty tiles and no more"
           + "\npossible moves.\n") 
 
     high_score = 0
-    program = PLAY
+    choice = PLAY
     key_bind_mode = MOVES_WASD
 
-    while program != QUIT:
-        program = get_user_choice(False)
+    while choice != QUIT:
+        choice = get_user_choice(False)
 
-        if program == PLAY:
+        if choice == PLAY:
             # Run a single round of 2048. 
             print("\nGame starting...\n")
             sleep(TIME_DELAY)
@@ -711,13 +711,13 @@ def main():
             if round_score > high_score: 
                 high_score = round_score
 
-        elif program == QUIT:
+        elif choice == QUIT:
             if high_score != 0:
                 print("\nYour highest score was {}.".format(high_score))
 
             print("\nThanks for playing 2048. Goodbye!")
 
-        elif program == SETTINGS: 
+        elif choice == SETTINGS: 
             key_bind_mode = choose_key_bind(key_bind_mode)
 
         else:
