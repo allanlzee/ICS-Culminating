@@ -425,10 +425,10 @@ def move_up(game_tiles: list) -> tuple:
                  [0, 2, 0, 0], 
                  [2, 0, 0, 2]])
 
-    [[4, 4, 2, 16], 
-     [2, 0, 0, 2], 
-     [0, 0, 0, 0], 
-     [0, 0, 0, 0]]
+    ([[4, 4, 2, 16], 
+      [2, 0, 0, 2], 
+      [0, 0, 0, 0], 
+      [0, 0, 0, 0]], 20)
     """
 
     game_tiles = tile_shift(game_tiles, True)
@@ -531,14 +531,14 @@ def game_board_move(game_tiles: list, direction: str,
 def game_outcome(game_tiles: list, won: bool) -> str:
     """Return "win" if the user has won the round by creating the tile 
     2048 in game_tiles and the user has not won in a previous move. If the 
-    user has not won yet, Return "in progress" if any possible moves can be 
+    user has not won yet, return "in progress" if any possible moves can be 
     made in game_tiles. Otherwise, return "loss".
     
-    >>> game_outcome([[0, 2, 2, 8], 
+    >>> game_outcome([[2048, 2, 2, 8], 
                       [4, 0, 0, 8], 
                       [0, 2, 0, 0], 
                       [2, 0, 0, 2]], False)
-    "in progress" 
+    "win" 
 
     >>> game_outcome([[2, 4, 2, 8], 
                       [4, 16, 32, 512], 
@@ -643,8 +643,8 @@ def game_round(key_bind_mode: dict) -> int:
                     print("\nInvalid choice, please try again.\n")
         
         else: 
-            new_game_tiles, move_score = game_board_move(
-                game_tiles, move, key_bind_mode)
+            new_game_tiles, move_score = game_board_move(game_tiles, move, 
+                key_bind_mode)
 
             round_score += move_score
 
@@ -653,8 +653,8 @@ def game_round(key_bind_mode: dict) -> int:
                 print("The game has ended.\n")
                 break
 
-            # If the board does not have an empty square or the move performed did 
-            # not change the game board, do not add a random tile. 
+            # If the board does not have an empty square or the move performed
+            # did not change the game board, do not add a random tile. 
             elif check_tile(new_game_tiles, EMPTY_TILE) and \
                 new_game_tiles != game_tiles:
 
